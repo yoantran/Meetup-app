@@ -1,4 +1,5 @@
 import MeetupList from "../components/meetups/MeetupList";
+import { useState, useEffect } from "react";
 
 const DUMMIE_DATA = [
     {
@@ -22,10 +23,46 @@ const DUMMIE_DATA = [
 ];
 
 function AllMeetupsPage() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadedMeetups, setLoadedMeetups] = useState([]);
+
+    useEffect (() => {
+        setIsLoading(true);
+        fetch(
+          "https://reactjs-meetup-app-a6caa-default-rtdb.asia-southeast1.firebasedatabase.app/meetups.json",
+              ).then(reponse => {
+                return response.json()
+              }).then(data => {
+                // transform the data
+                const meetup = []; // creating a helper array
+                for (const key in data) {
+                    // create new meetup for every key we loop
+                    const meeup = {
+                        id:key, // make id = key
+                        ...data[key] // using the spread operator (default JS operator) distribute data key into this object
+                    }
+                    // then push up the data tot eh helper array above
+                    meetups.push(meetup)
+                }
+
+                setIsLoading(false);
+                setLoadedMeetups(meetups);
+              });        
+    }, []) // the { effect } in useEffect would execute if [ value ] is change. We should add all external values/dependencies into [ value ] that the { effect } relies on
+
+          if (isLoading) {
+            return (
+              <section>
+                <p>is loading...</p>
+              </section>
+            );
+          } 
+
+
     return (
         <section>
             <h1>All Meetups</h1>
-            <MeetupList meetups={DUMMIE_DATA}/>
+            <MeetupList meetups={loadedMeetups}/>
         </section>);
 }
 
